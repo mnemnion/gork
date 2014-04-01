@@ -1,0 +1,118 @@
+( Ngaro Assembler                                             )
+( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+( This implements the basic core of an assembler for Ngaro.   )
+( It derives from the metacompiler used by Retro 11.x, but is )
+( simplified overall, and does not attempt to implement a     )
+( machine forth subset.                                       )
+(                                                             )
+( This is also better documented and organized into sections  )
+( that should hopefully be understandable and logical.        )
+( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+( This assumes that code using it will follow a structure of: )
+(                                                             )
+( include ngaro-asm.rx                                        )
+( beginApplication                                            )
+(   ... application code + data ...                           )
+(                                                             )
+(   label: main                                               )
+(     ... main code ...                                       )
+(                                                             )
+( main setEntryPoint                                          )
+( "imageName" saveImageAs                                     )
+( bye                                                         )
+( ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+
+
+( Dependencies ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+needs files'                               ( library/files.rx )
+
+
+( Configuration ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+2048 constant IMAGE-SIZE
+
+
+( Create Image Buffer ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+
+create image
+    IMAGE-SIZE allot
+
+variables| target origin fid |
+image [ !target ] [ !origin ] bi
+
+
+
+( Code to Save Image File ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+( This will write out the image to a new file on disk. It     )
+( does not alter the existing image.                          )
+(                                                             )
+( An image file consists of 32-bit values, but the file model )
+( in Ngaro only allows for reading and writing 8-bit bytes.   )
+( We have a couple of routines here that split each cell      )
+( into bytes, masking off the extra bits. Then we write them  )
+( to disk in little endian format.                            )
+
+: writeByte ( n- )
+  @fid ^files'write drop ;
+
+: applyMask ( n- )
+  %00000000000000000000000011111111 and ;
+
+: writeCell ( n- )
+       dup applyMask writeByte
+  8 >> dup applyMask writeByte
+  8 >> dup applyMask writeByte
+  8 >>     applyMask writeByte ;
+
+: saveImageAs ( $- )
+  ^files':W ^files'open !fid
+  cr @target @origin - putn " cells used\n" puts
+  image @target @origin - [ @+ writeCell ] times drop
+  @fid ^files'close drop ;
+
+
+( Map Byte Codes to Symbolic Names ~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+( To avoid naming conflicts with Retro, all of these end in a )
+( comma.                                                      )
+
+: ,  ( n-  ) @target !+ !target ;
+: vm: ( n"- ) ` : .data ` , ` ; ;
+   0 vm: nop,          1 vm: lit,          2 vm: dup,
+   3 vm: drop,         4 vm: swap,         5 vm: push,
+   6 vm: pop,          7 vm: loop,         8 vm: jump,
+   9 vm: return,      10 vm: >jump,       11 vm: <jump,
+  12 vm: !jump,       13 vm: =jump,       14 vm: @,
+  15 vm: !,           16 vm: +,           17 vm: -,
+  18 vm: *,           19 vm: /mod,        20 vm: and,
+  21 vm: or,          22 vm: xor,         23 vm: <<,
+  24 vm: >>,          25 vm: 0;,          26 vm: 1+,
+  27 vm: 1-,          28 vm: in,          29 vm: out,
+  30 vm: wait,
+
+
+( Remaining Assembler Functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ )
+
+: here        (  -n ) @target @origin - ;
+: label:      ( "-  ) here constant ;
+: #           ( n-  ) lit, , ;
+: $,          ( $-  ) withLength [ @+ , ] times 0 , drop ;
+
+: call:  ( "-  ) ' , ;
+: jump:  ( "-  ) jump, ' , ;
+: repeat (  -a ) here ;
+: again  ( a-  ) jump, , ;
+
+: setEntryPoint ( a- )  image 1 + ! ;
+
+: beginApplication
+  jump, 0 ,
+  32 [ 0 , ] times ;
+
+{{
+  : cond ( -a ) @target 0 , ;
+---reveal---
+  : =if  ( -a ) !jump, cond ;
+  : <if  ( -a ) >jump, cond ;
+  : >if  ( -a ) <jump, cond ;
+  : !if  ( -a ) =jump, cond ;
+  : then ( a- ) here swap ! ;
+}}

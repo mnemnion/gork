@@ -1,0 +1,35 @@
+( brute force ngaro assembler )
+chain: ming'
+
+    : nop,    0 , ; immediate 
+    : lit,    1 , ; immediate   
+    : dup,    2 , ; immediate 
+    : drop,   3 , ; immediate 
+    : swap,   4 , ; immediate   
+    : push,   5 , ; immediate
+    : pop,    6 , ; immediate 
+    : loop,   7 , ; immediate   
+    : jump,   8 , ; immediate
+    : ;,      9 , ; immediate 
+    : >jump, 10 , ; immediate   
+    : <jump, 11 , ; immediate
+    : !jump, 12 , ; immediate 
+    : =jump, 13 , ; immediate   
+    : @,     14 , ; immediate
+    : !,     15 , ; immediate 
+    : +,     16 , ; immediate   
+    : -,     17 , ; immediate
+    : *,     18 , ; immediate 
+    : /mod,  19 , ; immediate   
+    : and,   20 , ; immediate
+    : or,    21 , ; immediate 
+    : xor,   22 , ; immediate   
+    : <<,    23 , ; immediate
+    : >>,    24 , ; immediate 
+    : 0;,    25 , ; immediate   
+    : 1+,    26 , ; immediate
+    : 1-,    27 , ; immediate 
+    : in,    28 , ; immediate   
+    : out,   29 , ; immediate
+
+;chain
