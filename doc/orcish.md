@@ -24,6 +24,10 @@ Numbaz are always and only hexidecimal. No exceptions.
 
 If it is not a numba, it's a letta, and all lettaz are werdz. We spell everything in Orcish brutally, so that when we convert Forth words into Orcish werdz we don't break down in quivering confusion. 
 
+Important note: an Orc will make numbaz until it can't: it switches to neutral as soon as this process fails, and attempts to keep chewing the input. So a stream like `1+` is identical to `1 +`, the Orc eats the 1, fails to make the `+` into a numba, and interprets the `+`. This is a boon to readability and the simplest possible implementation.
+
+Note further: When an Orc chews `1e7`, it chews `1` first, puts it on the stack, chews `e`, putting `1e` on the stack through simple multplication, and so on. When the stack is full, it pushes a fresh number: `ffffaaaa` gives ( ffff aaaa -- ) on a 16 bit system. 
+
 ##Werdz
 
 All Orcs are familiar with one letta werdz. The meaning is the same, insofar as possible across architectures. 
@@ -50,12 +54,46 @@ Again, this is unlike most Forth, in that the dictionary is a forward-linked lis
 
 The compiler is a stick shift. I'm still exploring precisely what this means; there's a lot of good MachineForth spinoffs to look at here.
 
-`:` works as expected: we try to start compiling the next token as a new word, at the end of the bakpak. `` ` `` probably makes the next token interpreted, while `'` does the usual quoting the XT of the next token. `;` compiles an exit, and is used in idiomatic control structures of the `if else then ... ;` form. Tentatively, `i  E ; ... ;`.
+`:` is the compiler toggle. In interpretation mode, it reads the next token. If it can define it, compiler mode is retained, otherwise the Orc complains audibly (which is unusual) and turns back to interpreter. 
 
-So ``: fu ` ' D ` # ;`` would put `dup`'s XT on the stack when called, because we turned off the compiler, called `'`, which consumes another token, which was `D`. Now we're back in compile, so we turn it off again, and `#` compiles an anonymous constant, that is, an XT which has the effect of pushing the value on TOS. 
+If `:` is encountered in compile mode, it turns back to interpreter. Both `;`, which compiles an exit, and `:` must be present to end a definition. 
 
-So `h a0 #`, in interpretation mode, leaves an address on the stack which e`X`ecuted results in `a0` on the stack. I hope this isn't terribly hard to follow. 
+In a Core orc, we make grunt words manually. Our supervisor has the XT of DOCOL. available, and if we're exploring it's trivial to retrieve.
 
-Since we don't have a lot of chaz, I propose a dirty hack: `: 0 s D ;` would compile an anonymous (grunt) word into the bakpak. `h : 0 s D ;` does the same thing, leaving the XT on the stack, `h` for `here`. We can't redefine 0 anyway, and it's easy to test for and almost easy to read. 
+The header for an Orcish werd looks like ` [werd] [next] [head] | [code...] `. 	`next` is initially defined as EXIT. , which is rewritten with the address of `here` when a new werd is being defined. gruntz get interspersed, and will be forgotten if an Orc forgets any prior word. 
 
-The memory model of a Harvard machine is perforce more complex, and our vocabulary will reflect this. Easy to simulate on a von Neumann, and with a salutary separation of code and data regions.
+As a result ` ' fu 10 - `, for a 16 bit Orc will give DOCOL. if `fu` is a colon word, which it typically would be. 
+
+Pseudocoding it up a bit ` h DOCOL. , ' D , ' * , EXIT. , ` would compile your basic square grunt. `h` is `here`, and since that's where DOCOL. ends up, we're good. 
+
+Since Core Orcs have no assembler, direct words must be both constructed and linked to the bakpak 'manually'. This is of course a job for the supervisor environment. 
+
+`;` merely compiles an exit, so to compile a real word, we'd say `: sq D * ; :`, such that `sq` would square the TOS as expected. 
+
+###Comments
+
+`\` toggles the 'comment' mode. This actually writes to a special pad in memory in a circular queue, and the second `\` writes the range to a defined area of memory.
+
+An umbilical system doesn't really need comments: this behavior plays a role in Orcish communication, both to sideband communication and to provide a dense block of data. This data can't have `\` in it, clearly, and should be composed of chaz, probably. 
+
+####Aside
+
+At first, we're going to fake a lot of this function just by jacking Retro. I plan to target Ngaro directly as soon as practical. I gather the Retro community would be stoked to see another language running on Ngaro, even if they think ours is weird. As indeed it is. 
+
+###Stack Manipulation
+
+`D` for dup, `s` for swap, `o` for `over`.
+
+###Math
+
+`+,-,*,/,=,<,>` all behave as expected. In general, the extended glyphs such as `<>` should do the Right Thing, presuming an Orc understands them: if you think you know what a two-rune means, it's probably reserved.
+
+Can we define `1+`? We cannot, this is a syntax error. We can and shall define `+1` with the same meaning, for some Orcs.
+
+`A,O,N` are and, or, and xor. Them's your options.
+
+###Control Flow
+
+
+
+
