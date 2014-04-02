@@ -60,7 +60,7 @@ The compiler is a stick shift. I'm still exploring precisely what this means; th
 
 If `:` is encountered in compile mode, it turns back to interpreter. Both `;`, which compiles an exit, and `:` must be present to end a definition. 
 
-Grunts, `:noname` in classic Forth, turn on the compiler with `|`. This drops a DOCOL and proceeds as usual. If you want the XT on the stack, use `h` for **here** before you get started. Grunts terminate with `; |` though in compilation mode `:` and `|` have identical effects and both work. ` h | D * ; | ` puts an address on the stack and makes your classic square-shaped grunt at that location. ` 3 h | D * ; | x `, `x` for **execute**, leaves 9 on the stack. 
+Grunts, `:noname` in classic Forth, turn on the compiler with `|`. This drops a DOCOL and proceeds as usual. If you want the XT on the stack, use `h` for **here** before you get started. Grunts terminate with `; |` though in compilation mode `:` and `|` have identical effects and both work. ` h | D * ; | ` puts an address on the stack and makes your classic square-shaped grunt at that location. ` 3 h | D * ; | x `, for **execute**, leaves 9 on the stack. 
 
 Since Core Orcs have no assembler, direct words must be both constructed and linked to the bakpak 'manually'. This is of course a job for the supervisor environment. 
 
@@ -90,7 +90,7 @@ A simple example: instead of implementing a forward-linked bakpak, we'll just lo
 
 `+,-,*,/,=,<,>` all behave as expected. In general, the extended glyphs such as `<>` should do the Right Thing, presuming an Orc understands them: if you think you know what a two-rune means, it's probably reserved.
 
-Can we define `1+`? We cannot, this is a syntax error. We can and shall define `+1` with the same meaning, for some Orcs.
+Can we define `1+`? We cannot, nor need we. It's parsed as `1+`, as is `0=` the same as `0 =`. 
 
 I think we probably want `~` to mean modulus. 
 
@@ -111,5 +111,34 @@ Conditional loops benefit from our minimalist language. Anything between `(` and
 Do we need more control structures? 
 These nest, of course. It's a nice idiom, actually. 
 
+###Memory 
 
+Orcs handle any token containing `#`, `%`, or `!` in a special fashion. A token such as `Q#`, when first encountered, has the stack effect ( value -> nil ); subsequent uses of a# will have the effect ( nil -> value ), such that these behave somewhat like constants. 
 
+Orcs are protective of the pak. It lives in Flash, and it's brittle as a result. We don't provide access to the Flash words directly. `:`, `|`, `,`, and `#` all write to the Flash, and most anything reads from it. 
+
+`%` words access the spleen, our EEPROM in Harvard Yard. `%` itself reads eeprom ( adr -> value), while `Q`, a nonce word, performs a write ( value adr -> nil ).
+
+Words like `Q%` or `%Q` are like values, set at definition so ` 23 %t ` stores 23 somewhere useful in the EEPROM. The default behavior of `%t` is to read EEPROM. To write to it, `24 ' %t q`, q for nothing in particular. 
+
+Yes, we need two whole words here, because values are stored in the pak as "read from this area of eeprom". So the XT itself doesn't point to the EEPROM, though the address is near it, in an implementation dependent way. 
+
+`!` words are the same but in memory, and calling them places the memory address on the stack: `23 m!` makes it and `m! @` reads a 23 onto the sak. `!` itself and `@` write and read as usual: AVRS can read the same way across both memories, though eeprom is separate and writing is very much so. `!` on any address in the pak shouldn't work. 
+
+###Communication
+
+Orcs expect to be in the company of other Orcs. They also glumly accept being bossed around by users, because they can't tell the difference. 
+
+The most impressive capacity Orcs have is self-report. Let's start with the basics.
+
+When you tell an Orc to do something, and he understands you, he does it. First, he tells you he understood you, by repeating the command back as a comment. So the user says `10`, the Orc says `\ 10 \ ` back. The user says `D`, the Orc says `\ D \ ` then dups the `10`. 
+
+If we have, instead of a user, another Orc, the commanding Orc will treat the comments as comments. 
+
+If an Orc doesn't understand you, it says nothing. You may imagine it glaring menacingly. It also increments the confusion byte. This goes down when you make sense again, until the Orc is happy. 
+
+Orcs will happily read their memory out to you, using `r ( start end -> nil "range" )`. This is hex, wrapped in a comment and pretty printed with spaces and newlines. 
+
+The real treasure is `?`, which prompts the Orc to search for the next token. `? fu` will earn you a comment containing the full Orcish definition of fu. This is a superpower for such a small beast. 
+
+Lets say we have `: fu 34 + 12 / ; :` as a random definition. `? fu` will compell the Orc to utter the fell words `\ : fu 34 + 12 / ; : \ ` just as pretty as you please. Edge case: if you've stuck the actual function `\` in something, and `` ` ' \ `` will in fact do this, your comment will end in a bad place. So don't do that, or account for it. There's a newline after the concluding comment, and `?` never generates a newline otherwise, so there's that: this kind of nonsense is unlikely since normally we generate a comment by `2f T` for **emiT**. 
