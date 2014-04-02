@@ -6,14 +6,13 @@ variable (liver) 126 allot
 
 
 : nope-nope-nope
-	"nope" puts  ;
+	"\nnope " puts  ;
 
 (liver) 127 
-	[ over +
-
-	[ nope-nope-nope ]
-	swap !
-
-	  ] iter
+  [ 	
+    over +
+    [ nope-nope-nope ]
+    swap !
+  ] iter
 
 
