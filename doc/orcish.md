@@ -70,9 +70,13 @@ Since Core Orcs have no assembler, direct words must be both constructed and lin
 
 `;` merely compiles an exit, so to compile a real word, we'd say `: sq D * ; :`, such that `sq` would square the TOS as expected. 
 
+`` ` `` causes the compiler to turn off for the next token. Entering compilation of a word has no effect on the stack, so `` ' D : fu ` , ; : `` will have the effect of manually compiling the XT of dup, making `fu` an inefficient synonym. 
+
+There's no need immediate, postpone, or anything else that smacks of macros. Our stick shift is typically driven by robots, which are more than capable of macros. 
+
 ###Comments
 
-`\` toggles the 'comment' mode. This actually writes to a special pad in memory in a circular queue, and the second `\` writes the range to a defined area of memory.
+`\` toggles the 'comment' mode. This actually writes to a special pad in memory in a circular queue, and the second `\` writes the range to a defined area of memory. The former is the `gab`, the latter is the `drp`, which is roughly the same as the Orc's state model. 
 
 An umbilical system doesn't really need comments: this behavior plays a role in Orcish communication, both to sideband communication and to provide a dense block of data. This data can't have `\` in it, clearly, and should be composed of chaz, probably. 
 
@@ -82,7 +86,7 @@ At first, we're going to fake a lot of this function just by jacking Retro. I pl
 
 ###Stack Manipulation
 
-`D` for dup, `s` for swap, `o` for `over`.
+`D` for **dup**, `s` for **swap**, `o` for **over**, `.` for **drop**.
 
 ###Math
 
