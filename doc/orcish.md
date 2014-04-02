@@ -2,7 +2,7 @@
 
 This is a quick guide to Orcish, intended to aid the initial implementation on the Ngaro virtual machine.
 
-The detailed discussion is [elsewhere](http://addme.com). 
+The detailed discussion is [elsewhere](https://github.com/mnemnion/imp/tree/master/Forge/markdown/ArdForth). 
 
 ##Fundamentals
 
