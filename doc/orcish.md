@@ -46,3 +46,16 @@ Orcs may be taught two letta werdz, and it's likely even the most primitive Core
 
 Again, this is unlike most Forth, in that the dictionary is a forward-linked list and an Orc will refuse to relearn a word. It can be induced to forget one, which causes it to forget everything after. 
 
+###Compilation model
+
+The compiler is a stick shift. I'm still exploring precisely what this means; there's a lot of good MachineForth spinoffs to look at here.
+
+`:` works as expected: we try to start compiling the next token as a new word, at the end of the bakpak. `` ` `` probably makes the next token interpreted, while `'` does the usual quoting the XT of the next token. `;` compiles an exit, and is used in idiomatic control structures of the `if else then ... ;` form. Tentatively, `i  E ; ... ;`.
+
+So ``: fu ` ' D ` # ;`` would put `dup`'s XT on the stack when called, because we turned off the compiler, called `'`, which consumes another token, which was `D`. Now we're back in compile, so we turn it off again, and `#` compiles an anonymous constant, that is, an XT which has the effect of pushing the value on TOS. 
+
+So `h a0 #`, in interpretation mode, leaves an address on the stack which e`X`ecuted results in `a0` on the stack. I hope this isn't terribly hard to follow. 
+
+Since we don't have a lot of chaz, I propose a dirty hack: `: 0 s D ;` would compile an anonymous (grunt) word into the bakpak. `h : 0 s D ;` does the same thing, leaving the XT on the stack, `h` for `here`. We can't redefine 0 anyway, and it's easy to test for and almost easy to read. 
+
+The memory model of a Harvard machine is perforce more complex, and our vocabulary will reflect this. Easy to simulate on a von Neumann, and with a salutary separation of code and data regions.
