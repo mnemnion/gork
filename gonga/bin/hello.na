@@ -1,0 +1,27 @@
+include ngaro-asm.rx
+
+beginApplication
+
+include pieces/io-core.na
+include pieces/console/putc.na
+include pieces/console/puts.na
+include pieces/console-input.na
+
+label: hello
+  "hello, world!" $,
+
+label: main
+  hello # call: puts
+  10 # call: putc
+  13 # call: putc
+  32 # call: accept
+  10 # call: putc
+  13 # call: putc
+  inputBuffer # call: puts
+  10 # call: putc
+  13 # call: putc
+  'a # call: putc
+
+main setEntryPoint
+"helloImage" saveImageAs
+bye

@@ -1,0 +1,19 @@
+( simulorc.rx )
+
+( ---- Anatomy ---- )
+
+variable (liver) 126 allot 
+
+
+: nope-nope-nope
+	"nope" puts  ;
+
+(liver) 127 
+	[ over +
+
+	[ nope-nope-nope ]
+	swap !
+
+	  ] iter
+
+
