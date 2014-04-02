@@ -26,6 +26,8 @@ If it is not a numba, it's a letta, and all lettaz are werdz. We spell everythin
 
 Important note: an Orc will make numbaz until it can't: it switches to neutral as soon as this process fails, and attempts to keep chewing the input. So a stream like `1+` is identical to `1 +`, the Orc eats the 1, fails to make the `+` into a numba, and interprets the `+`. This is a boon to readability and the simplest possible implementation.
 
+There are gotchas! `1D` is a one and a dup, not a numba. 
+
 Note further: When an Orc chews `1e7`, it chews `1` first, puts it on the stack, chews `e`, putting `1e` on the stack through simple multplication, and so on. When the stack is full, it pushes a fresh number: `ffffaaaa` gives ( ffff aaaa -- ) on a 16 bit system. 
 
 ##Werdz
@@ -58,17 +60,11 @@ The compiler is a stick shift. I'm still exploring precisely what this means; th
 
 If `:` is encountered in compile mode, it turns back to interpreter. Both `;`, which compiles an exit, and `:` must be present to end a definition. 
 
-In a Core orc, we make grunt words manually. Our supervisor has the XT of DOCOL. available, and if we're exploring it's trivial to retrieve.
-
-The header for an Orcish werd looks like ` [werd] [next] [head] | [code...] `. 	`next` is initially defined as EXIT. , which is rewritten with the address of `here` when a new werd is being defined. gruntz get interspersed, and will be forgotten if an Orc forgets any prior word. 
-
-As a result ` ' fu 10 - `, for a 16 bit Orc will give DOCOL. if `fu` is a colon word, which it typically would be. 
-
-Pseudocoding it up a bit ` h DOCOL. , ' D , ' * , EXIT. , ` would compile your basic square grunt. `h` is `here`, and since that's where DOCOL. ends up, we're good. 
+Grunts, `:noname` in classic Forth, turn on the compiler with `|`. This drops a DOCOL and proceeds as usual. If you want the XT on the stack, use `h` for **here** before you get started. Grunts terminate with `; |` though in compilation mode `:` and `|` have identical effects and both work. ` h | D * ; | ` puts an address on the stack and makes your classic square-shaped grunt at that location. ` 3 h | D * ; | x `, `x` for **execute**, leaves 9 on the stack. 
 
 Since Core Orcs have no assembler, direct words must be both constructed and linked to the bakpak 'manually'. This is of course a job for the supervisor environment. 
 
-`;` merely compiles an exit, so to compile a real word, we'd say `: sq D * ; :`, such that `sq` would square the TOS as expected. 
+`;` merely compiles an exit, so to compile a real word, we'd say `: sq D * ; :`, such that `sq` would square the TOS as expected. If we leave off the second `:` we'll keep compiling unreachable words.
 
 `` ` `` causes the compiler to turn off for the next token. Entering compilation of a word has no effect on the stack, so `` ' D : fu ` , ; : `` will have the effect of manually compiling the XT of dup, making `fu` an inefficient synonym. 
 
@@ -84,9 +80,11 @@ An umbilical system doesn't really need comments: this behavior plays a role in 
 
 At first, we're going to fake a lot of this function just by jacking Retro. I plan to target Ngaro directly as soon as practical. I gather the Retro community would be stoked to see another language running on Ngaro, even if they think ours is weird. As indeed it is. 
 
+A simple example: instead of implementing a forward-linked bakpak, we'll just look in the Orc's 'chain' for the word, and refuse to define it if already present. We end up with the same behavior. 
+
 ###Stack Manipulation
 
-`D` for **dup**, `s` for **swap**, `o` for **over**, `.` for **drop**.
+`D` for **dup**, `s` for **swap**, `o` for **over**, `.` for **drop**, `r` for **rot**.  `{` and `}` work like `r>` and `>r`, pushing and popping across the `sak` and `bag`. Those are our Orc's data stack and return stack, naturally.
 
 ###Math
 
@@ -94,10 +92,24 @@ At first, we're going to fake a lot of this function just by jacking Retro. I pl
 
 Can we define `1+`? We cannot, this is a syntax error. We can and shall define `+1` with the same meaning, for some Orcs.
 
-`A,O,N` are and, or, and xor. Them's your options.
+I think we probably want `~` to mean modulus. 
+
+`A,O,N` are and, or, and xor. Them's your options. We do need unary not, defined correctly, which is probably `^`.
 
 ###Control Flow
 
+I'm wondering how stripped down we can get this.
+
+`i` for **if**, `E` for **else**, `t` for **then**, which is optional if both code blocks exit. I do want to support nested conditionals even within the core, for a few reasons. 
+
+I do propose an unusual counted loop. `l` takes ( XT index -- ) and executes from 0 to index-1 times, storing the index in an implementation-specific register which may be manually read. So ` 3 ' D 10 l` would leave 11 `3`s on the stack. 
+
+I gather this will be small and fast: a custom DOCOL. that skips the header, executes the word, and iterates on EXIT by incrementing the return pointer and jumping back to the start. 
+
+Conditional loops benefit from our minimalist language. Anything between `(` and `)` is repeated so long as the TOS is true, `( 1 )` will hang your machine nicely. ` 1 ( D 1+ D 20 = ) ` will leave a series of numbers up to 20 on your stack, and maybe blow it; Orcs shouldn't be counted on to be deep in the `sak` department.
+
+Do we need more control structures? 
+These nest, of course. It's a nice idiom, actually. 
 
 
 
