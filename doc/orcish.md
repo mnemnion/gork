@@ -154,3 +154,7 @@ The eye and ear port values are stored in the spleen; changing them is perforce 
 `C`, stack effect `( adr count -> checksum )`, does an adler32 over the region of memory. 
 
 I have some notions of Orcs using multiplexing to get around bad environments and to get away from bad input, but those are somewhat half-baked. 
+
+###Buffers
+
+Buffers have a cell of count at the front and the rest is data. `P` takes a buffer on-stack and says it, one byte at a time. Other buffer words are going to get stuck in leftover letters. `"` writes bytes to a pad until the closing `"`, returning the range as a buffer. Compiling it has the same effect, so hopefully you have a string coming into the ear when a word containing " in the body gets called. `"` will probably use `h` not `w`, so it'll hang your Orc otherwise. 
