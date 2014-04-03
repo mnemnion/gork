@@ -72,7 +72,7 @@ There's no need immediate, postpone, or anything else that smacks of macros. Our
 
 ###Comments
 
-`\` toggles the 'comment' mode. This actually writes to a special pad in memory in a circular queue, and the second `\` writes the range to a defined area of memory. The former is the `gab`, the latter is the `drp`, which is roughly the same as the Orc's state model. 
+`\` toggles the 'comment' mode. This actually writes to a special pad in memory in a circular queue, and the second `\` writes the range to a defined area of memory. The former is the `gab`, the latter is in the `drp`, which is roughly the same as the Orc's state model. 
 
 An umbilical system doesn't really need comments: this behavior plays a role in Orcish communication, both to sideband communication and to provide a dense block of data. This data can't have `\` in it, clearly, and should be composed of chaz, probably. 
 
