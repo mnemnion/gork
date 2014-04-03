@@ -90,7 +90,7 @@ A simple example: instead of implementing a forward-linked bakpak, we'll just lo
 
 `+,-,*,/,=,<,>` all behave as expected. In general, the extended glyphs such as `<>` should do the Right Thing, presuming an Orc understands them: if you think you know what a two-rune means, it's probably reserved.
 
-Can we define `1+`? We cannot, nor need we. It's parsed as `1+`, as is `0=` the same as `0 =`. 
+Can we define `1+`? We cannot, nor need we. It's parsed as `1 +`, as is `0=` the same as `0 =`. 
 
 I think we probably want `~` to mean modulus. 
 
@@ -113,7 +113,7 @@ These nest, of course. It's a nice idiom, actually.
 
 ###Memory 
 
-Orcs handle any token containing `#`, `%`, or `!` in a special fashion. A token such as `Q#`, when first encountered, has the stack effect ( value -> nil ); subsequent uses of a# will have the effect ( nil -> value ), such that these behave somewhat like constants. 
+Orcs handle any token containing `#`, `%`, or `!` in a special fashion. A token such as `C#`, when first encountered, has the stack effect ( value -> nil ); subsequent uses of C# will have the effect ( nil -> value ), such that these behave somewhat like constants. 
 
 Orcs are protective of the pak. It lives in Flash, and it's brittle as a result. We don't provide access to the Flash words directly. `:`, `|`, `,`, and `#` all write to the Flash, and most anything reads from it. 
 
