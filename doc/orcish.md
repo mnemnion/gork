@@ -139,6 +139,8 @@ If an Orc doesn't understand you, it says nothing. You may imagine it glaring me
 
 Orcs will happily read their memory out to you, using `r ( start end -> nil "range" )`. This is hex, wrapped in a comment and pretty printed with spaces and newlines. 
 
+As mentioned, commenting can be used as a side-channel to send data, but this is limited in various ways. `"` has the stack effect ( count -> nil !buf ) and reads the next count bytes directly into the memory pad. unlike the gab, this is not a rolling queue, it overwrites with each use. These are bytes, not cha, allowing for arbitrary data. Please don't use this superpower in source code, Orcish should be copy-paste, but it's a good conversational idiom. 
+
 The real treasure is `?`, which prompts the Orc to search for the next token. `? fu` will earn you a comment containing the full Orcish definition of fu. This is a superpower for such a small beast. 
 
 Lets say we have `: fu 34 + 12 / ; :` as a random definition. `? fu` will compell the Orc to utter the fell words `\ : fu 34 + 12 / ; : \ ` just as pretty as you please. Edge case: if you've stuck the actual function `\` in something, and `` ` ' \ `` will in fact do this, your comment will end in a bad place. So don't do that, or account for it. There's a newline after the concluding comment, and `?` never generates a newline otherwise, so there's that: this kind of nonsense is unlikely.
@@ -154,9 +156,3 @@ The eye and ear port values are stored in the spleen; changing them is perforce 
 `C`, stack effect `( adr count -> checksum )`, does an adler32 over the region of memory. 
 
 I have some notions of Orcs using multiplexing to get around bad environments and to get away from bad input, but those are somewhat half-baked. 
-
-###Buffers
-
-Buffers have a cell of count at the front and the rest is data. `P` takes a buffer on-stack and says it, one byte at a time. Other buffer words are going to get stuck in leftover letters. `"` writes bytes to a pad until the closing `"`, returning the range as a buffer. Compiling it has the same effect, so hopefully you have a string coming into the ear when a word containing " in the body gets called. `"` will probably use `h` not `w`, so it'll hang your Orc otherwise. 
-
-Orcish doesn't have a lot of room for state-smart headaches: I'm pretty sure a compiler compiles everything except `` ` `` itself. `` ` ' ` ` , `` would compile the XT for `` ` ``, presuming you started in compile mode. Simple is good for Orcs: we program in a high-level Forth dialect with plenty of room for fancy. 

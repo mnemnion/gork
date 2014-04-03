@@ -15,4 +15,11 @@ variable (liver) 126 allot
     swap !
   ] iter
 
+( ---- Tawka ---- )
+
+: hexabyte ( hexes a byte )
+	dup 10 < 
+		[ 48 + ] 
+		[ 87 + ] if ;
+
 
