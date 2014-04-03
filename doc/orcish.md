@@ -158,3 +158,5 @@ I have some notions of Orcs using multiplexing to get around bad environments an
 ###Buffers
 
 Buffers have a cell of count at the front and the rest is data. `P` takes a buffer on-stack and says it, one byte at a time. Other buffer words are going to get stuck in leftover letters. `"` writes bytes to a pad until the closing `"`, returning the range as a buffer. Compiling it has the same effect, so hopefully you have a string coming into the ear when a word containing " in the body gets called. `"` will probably use `h` not `w`, so it'll hang your Orc otherwise. 
+
+Orcish doesn't have a lot of room for state-smart headaches: I'm pretty sure a compiler compiles everything except `` ` `` itself. `` ` ' ` ` , `` would compile the XT for `` ` ``, presuming you started in compile mode. Simple is good for Orcs: we program in a high-level Forth dialect with plenty of room for fancy. 
