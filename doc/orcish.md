@@ -123,7 +123,7 @@ Words like `Q%` or `%Q` are like values, set at definition so ` 23 %t ` stores 2
 
 Yes, we need two whole words here, because values are stored in the pak as "read from this area of eeprom". So the XT itself doesn't point to the EEPROM, though the address is near it, in an implementation dependent way. 
 
-`!` words are the same but in memory, and calling them places the memory address on the stack: `23 m!` makes it and `m! @` reads a 23 onto the sak. `!` itself and `@` write and read as usual: AVRS can read the same way across both memories, though eeprom is separate and writing is very much so. `!` on any address in the pak shouldn't work. 
+`!` words are the same but in memory, and calling them places the memory address on the stack: `23 m!` makes it and `m! @` reads a 23 onto the sak. `!` itself and `@` write and read as usual: AVRS can read the same way across both memories, though eeprom is separate and writing is very much so. `!` on any address in the pak shouldn't work, while ` ' fu @ ` would read the XT for DOCOL. from the header of `fu`. 
 
 ###Communication
 
@@ -141,4 +141,16 @@ Orcs will happily read their memory out to you, using `r ( start end -> nil "ran
 
 The real treasure is `?`, which prompts the Orc to search for the next token. `? fu` will earn you a comment containing the full Orcish definition of fu. This is a superpower for such a small beast. 
 
-Lets say we have `: fu 34 + 12 / ; :` as a random definition. `? fu` will compell the Orc to utter the fell words `\ : fu 34 + 12 / ; : \ ` just as pretty as you please. Edge case: if you've stuck the actual function `\` in something, and `` ` ' \ `` will in fact do this, your comment will end in a bad place. So don't do that, or account for it. There's a newline after the concluding comment, and `?` never generates a newline otherwise, so there's that: this kind of nonsense is unlikely since normally we generate a comment by `2f T` for **emiT**. 
+Lets say we have `: fu 34 + 12 / ; :` as a random definition. `? fu` will compell the Orc to utter the fell words `\ : fu 34 + 12 / ; : \ ` just as pretty as you please. Edge case: if you've stuck the actual function `\` in something, and `` ` ' \ `` will in fact do this, your comment will end in a bad place. So don't do that, or account for it. There's a newline after the concluding comment, and `?` never generates a newline otherwise, so there's that: this kind of nonsense is unlikely.
+
+If the word is direct, the Orc provides a hex dump, word aligned, up to the NEXT. If the next token is a numba, the Orc attempts to read a grunt from that address: if it's a DOCOL, a disassembly, direct gets a dump, otherwise, it glares at you. So `? ab23` tries to read the grunt from ab23. 
+
+`h` 'hears' a single byte, putting it on the stack, while `S` says whatever's on top, popping it: only the low byte is sent. `Z` interprets the stack as hex and says it accordingly. `w` polls for a byte, hearing it if there's input; `h` blocks until it hears something. `h` and `S` do not filter the byte into a cha. 
+
+The eye and ear port values are stored in the spleen; changing them is perforce implementation dependent. There will be an i/o library for fast multiport programming, likely centered around tokens with `\` in them. 
+
+###Integrity
+
+`C`, stack effect `( adr count -> checksum )`, does an adler32 over the region of memory. 
+
+I have some notions of Orcs using multiplexing to get around bad environments and to get away from bad input, but those are somewhat half-baked. 
