@@ -22,12 +22,22 @@ variable (liver) 126 allot
 		[ 48 + ] 
 		[ 87 + ] if ;
 
-: byte>cha ( byte -> < := cha true | false > -- := ?cha )
+: byte>cha ( byte -> < := cha true | byte false > -- := ?cha )
 	( "filters out non-printable ascii" )
-	dup 32 126 within 
-		[ drop 0 ] ifFalse ;
+	dup 32 126 within ;
 
-: heer ( hear a cha ) ;
+: half-heer 
+	getc byte>cha 
+		[ drop half-heer ] ifFalse ;
+
+
+: heer ( hear a cha )
+	getc byte>cha 
+	[ 
+		getc byte>cha 
+		[ drop half-heer ] ifFalse ]
+	[ drop heer ]              if  
+ ;
 
 : unspaz ( space handling ) ;
 
