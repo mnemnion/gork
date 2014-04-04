@@ -141,7 +141,9 @@ Orcs will happily read their memory out to you, using `r ( start end -> nil "ran
 
 As mentioned, commenting can be used as a side-channel to send data, but this is limited in various ways. `"` has the stack effect ( count -> nil !buf ) and reads the next count bytes directly into the memory pad. unlike the gab, this is not a rolling queue, it overwrites with each use. These are bytes, not cha, allowing for arbitrary data. Please don't use this superpower in source code, Orcish should be copy-paste, but it's a good conversational idiom. 
 
-The real treasure is `?`, which prompts the Orc to search for the next token. `? fu` will earn you a comment containing the full Orcish definition of fu. This is a superpower for such a small beast. 
+The real treasure is `?`, which prompts the Orc to search for the next token. `? fu` will earn you a string containing the full Orcish definition of fu. This is a superpower for such a small beast. 
+
+The string is assembled in the pad and sent in the form `count " string...`. That is, the Orc will say the (hex) value of the length of the string, then send a space, then `"`, then another space, then the string. If another Orc hears this sequence, it will write the string to its own pad.
 
 Lets say we have `: fu 34 + 12 / ; :` as a random definition. `? fu` will compell the Orc to utter the fell words `\ : fu 34 + 12 / ; : \ ` just as pretty as you please. Edge case: if you've stuck the actual function `\` in something, and `` ` ' \ `` will in fact do this, your comment will end in a bad place. So don't do that, or account for it. There's a newline after the concluding comment, and `?` never generates a newline otherwise, so there's that: this kind of nonsense is unlikely.
 
