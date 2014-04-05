@@ -18,7 +18,7 @@ Orcs hear one byte at a time. The first thing an Orc will do with a byte is try 
 
 Any byte which succeeds in this first pass is a cha. Orcs hear and speak in cha. 
 
-The next attempt is to parse a number. Anything in the range [a-f0-9] will parse as a number, these chaz being known as numbaz. Barring any other character, an Orc will eat numbaz until his stack is full, then push another one. A 16 bit Orc eats numbaz 4 at a type, a 32 bit Orc eats 8. 
+The next attempt is to parse a number. Anything in the range [a-f0-9] will parse as a number, these chaz being known as numbaz. Barring any other character, an Orc will eat numbaz until the stack width is filled, then push another one. A 16 bit Orc eats numbaz 4 at a type, a 32 bit Orc eats 8. 
 
 Numbaz are always and only hexidecimal. No exceptions. 
 
@@ -50,7 +50,7 @@ The remaining 5,331 (give or take) werdz are the Orcish library. Some effort is 
 
 Orcs may be taught two letta werdz, and it's likely even the most primitive Core Orcs will be expected to know a few. The structure (the bakpak) which contains the two letta werdz must exist, and the core API has `:` to add werdz to it. 
 
-Again, this is unlike most Forth, in that the dictionary is a forward-linked list and an Orc will refuse to relearn a word. It can be induced to forget one, which causes it to forget everything after. 
+Again, this is unlike most Forth, in that the dictionary is a forward-linked list and an Orc will refuse to relearn a word. It can be induced to forget one, which causes it to forget everything after. An Orc can only forget two letta werdz.
 
 ###Compilation model
 
@@ -145,7 +145,7 @@ The real treasure is `?`, which prompts the Orc to search for the next token. `?
 
 The string is assembled in the pad and sent in the form `count " string...`. That is, the Orc will say the (hex) value of the length of the string, then send a space, then `"`, then another space, then the string. If another Orc hears this sequence, it will write the string to its own pad.
 
-Lets say we have `: fu 34 + 12 / ; :` as a random definition. `? fu` will compell the Orc to utter the fell words `\ : fu 34 + 12 / ; : \ ` just as pretty as you please. Edge case: if you've stuck the actual function `\` in something, and `` ` ' \ `` will in fact do this, your comment will end in a bad place. So don't do that, or account for it. There's a newline after the concluding comment, and `?` never generates a newline otherwise, so there's that: this kind of nonsense is unlikely.
+Lets say we have `: fu 34 + 12 / ; :` as a random definition. `? fu` will compell the Orc to utter the fell words `13 " : fu 34 + 12 / ; : ` just as pretty as you please. 
 
 If the word is direct, the Orc provides a hex dump, word aligned, up to the NEXT. If the next token is a numba, the Orc attempts to read a grunt from that address: if it's a DOCOL, a disassembly, direct gets a dump, otherwise, it glares at you. So `? ab23` tries to read the grunt from ab23. 
 
