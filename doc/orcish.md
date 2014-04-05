@@ -145,7 +145,7 @@ The real treasure is `?`, which prompts the Orc to search for the next token. `?
 
 The string is assembled in the pad and sent in the form `count " string...`. That is, the Orc will say the (hex) value of the length of the string, then send a space, then `"`, then another space, then the string. If another Orc hears this sequence, it will write the string to its own pad.
 
-Lets say we have `: fu 34 + 12 / ; :` as a random definition. `? fu` will compell the Orc to utter the fell words `\ : fu 34 + 12 / ; : \ ` just as pretty as you please. Edge case: if you've stuck the actual function `\` in something, and `` ` ' \ `` will in fact do this, your comment will end in a bad place. So don't do that, or account for it. There's a newline after the concluding comment, and `?` never generates a newline otherwise, so there's that: this kind of nonsense is unlikely.
+Lets say we have `: fu 34 + 12 / ; :` as a random definition. `? fu` will compell the Orc to utter the fell words `13 " : fu 34 + 12 / ; : ` just as pretty as you please. 
 
 If the word is direct, the Orc provides a hex dump, word aligned, up to the NEXT. If the next token is a numba, the Orc attempts to read a grunt from that address: if it's a DOCOL, a disassembly, direct gets a dump, otherwise, it glares at you. So `? ab23` tries to read the grunt from ab23. 
 
