@@ -15,6 +15,35 @@ variable (liver) 126 allot
     swap !
   ] iter drop
 
+: (st) (liver) + ! ;
+
+' dup   'D (st)
+' swap  's (st)
+' over  'o (st)
+' drop  '. (st)
+' rot   'r (st)
+' pop   '{ (st)
+' push  '} (st)
+
+' +     '+ (st)
+' -     '- (st)
+' *     '* (st)
+' /     '/ (st)
+' =     '= (st)
+' <     '< (st)
+' >     '> (st)
+' mod   '~ (st)
+' not   '^ (st)
+' and   'A (st)
+' or    'O (st)
+' xor   'N (st)
+
+' do    'X (st)
+' '     '' (st)
+' h     'h (st)
+
+
+
 ( ---- Tawka ---- )
 
 : hexabyte ( "hexes a byte" )
@@ -56,15 +85,23 @@ variable (liver) 126 allot
 	[ 48 - ] if ; 
 
 : numbaz 
-	"\nnumbaz!\n" puts 
+	"\nnumbaz!" puts 
 	dup 32 =
 	[ drop numba>byte ]
 	[ numba>byte swap numba>byte 4 << + ] if
+	"\nreached!" puts
 	;
-: lettaz "\nlettaz!\n" puts ;
+
+: bakpak "\nbakpak!" puts ;
+
+: lettaz 
+	"\nlettaz!  " puts .s 
+	dup 32 =  
+	 [ drop (liver) + @ do ]
+	 [ bakpak ] if ;
 
 : grk   ( comprehend )
-	"\ngrokked!\n" puts
+	"\ngrokked!" puts
 	over numba?
 		[ numbaz ]
 		[ lettaz ] if
