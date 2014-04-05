@@ -36,22 +36,39 @@ variable (liver) 126 allot
 	[ 
 		getc byte>cha 
 		[ drop half-heer ] ifFalse ]
-	[ drop heer ]              if  
- ;
+	[ drop heer ]
+	if ;
 
 : unspaz ( cha --> cha ) 
 	( "space handling" ) 
 	over 32 = 
 		[ nip half-heer unspaz ] ifTrue ;
 
-: numba? \ ( cha -> flag )
+: numba?  ( cha -> flag ?numba )
 	( "is the cha a numba?" )
 	dup 97 103 within push ( a-f )
 	    48 58  within pop ( 0-9 )
 	or ;
 
+: numba>byte ( numba -> byte )
+	dup 97 103 within
+	[ 87 - ]
+	[ 48 - ] if ; 
+
+: numbaz 
+	"\nnumbaz!\n" puts 
+	dup 32 =
+	[ drop numba>byte ]
+	[ numba>byte swap numba>byte 4 << + ] if
+	;
+: lettaz "\nlettaz!\n" puts ;
+
 : grk   ( comprehend )
-	"\ngrokked!\n" puts ;
+	"\ngrokked!\n" puts
+	over numba?
+		[ numbaz ]
+		[ lettaz ] if
+	 ;
 
 : grok heer unspaz grk ;
 
