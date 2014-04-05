@@ -11,7 +11,7 @@ variable (liver) 126 allot
 (liver) 127 
   [ 	
     over +
-    [ nope-nope-nope ]
+    &nope-nope-nope
     swap !
   ] iter drop
 
