@@ -11,7 +11,7 @@ To build:
 ::
 
   export GOPATH=`pwd`
-  go install main
+  go install gonga
 
 
 ---------------------

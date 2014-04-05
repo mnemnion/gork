@@ -4,9 +4,12 @@ import (
 	"ngaro"
 	"flag"
 	"fmt"
+  "log"
 	"io"
 	"os"
 	"os/exec"
+	"github.com/kless/term/readline"
+  "github.com/kless/term"
 )
 
 var Usage = func() {
@@ -58,14 +61,59 @@ func ttyDimensions() (width int32, height int32) {
 	return vt100Dimensions()
 }
 
+// ConsoleInput is an adapter for Readline and Ngaro's byte-oriented input.
+type ConsoleInput struct{
+  line    *readline.Line
+  pending []byte
+}
+
+func min(a, b int) int {
+  if a < b {
+    return a
+  }
+  return b
+}
+
+// Read bridges the semantic gap between a raw byte-oriented reader and the line-oriented approach taken by ReadLine.
+func (ci *ConsoleInput) Read(bs []byte) (int, error) {
+  if len(ci.pending) == 0 {
+    s, err := ci.line.Read()
+    if err != nil {
+      return 0, io.EOF  // Hokey, but good enough for bootstrapping purposes.
+    }
+    ci.pending = []byte(s)
+    ci.pending = append(ci.pending, byte(13), byte(10))
+  }
+  n := min(len(bs), len(ci.pending))
+  copy(bs[0:n], ci.pending[0:n])
+  ci.pending = ci.pending[n:]
+  return n, nil
+}
+
 func main() {
 	var wf withFiles
-//	flag.Var(&wf, "w", "input files")
-//	flag.Usage = Usage
 	flag.Parse()
 
 	var img []int32
 	var err error
+
+  h, err := readline.NewHistory("gonga.history")
+  if err != nil {
+    log.Fatal(err)
+  }
+  t, err := term.New()
+  if err != nil {
+    log.Fatal(err)
+  }
+  defer t.Restore()
+  l, err := readline.NewLine(t, "", "", 0, h)
+  if err != nil {
+    log.Fatal(err)
+  }
+  ci := &ConsoleInput{
+    line:    l,
+    pending: make([]byte, 0),
+  }
 
 	switch flag.NArg() {
 	case 0:
@@ -90,11 +138,13 @@ func main() {
 	for i, _ := range wf {
 		rs = append(rs, wf[len(wf)-1-i])
 	}
-	input := io.MultiReader(append(rs, os.Stdin)...)
+	input := io.MultiReader(append(rs, ci)...)
 	clr := noClear
 	dim := vt100Dimensions
-	if *tty { // Set raw mode
-		exec.Command("/bin/stty", "-F", "/dev/tty", "-echo", "-icanon", "min", "1").Run()
+	if *tty {
+    // Gonga's original implementation set the console into raw mode with a /bin/stty call.
+    // For interactive Orc emulation, this works against us.  We desperately want readline
+    // capability.
 		clr = ttyClear
 		dim = ttyDimensions
 	}
@@ -103,9 +153,6 @@ func main() {
 	term := ngaro.NewTerm(clr, dim, input, os.Stdout)
 	vm := ngaro.New(img, *dump, *shrink, term)
 	err = vm.Run()
-	if *tty { // Unset raw mode
-		exec.Command("/bin/stty", "-F", "/dev/tty", "echo", "cooked").Run()
-	}
 	if err != nil {
 		os.Exit(1)
 	}
