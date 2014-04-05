@@ -44,6 +44,12 @@ variable (liver) 126 allot
 	over 32 = 
 		[ nip half-heer unspaz ] ifTrue ;
 
+: numba? \ ( cha -> flag )
+	( "is the cha a numba?" )
+	dup 97 103 within push ( a-f )
+	    48 58  within pop ( 0-9 )
+	or ;
+
 : grk   ( comprehend )
 	"\ngrokked!\n" puts ;
 
