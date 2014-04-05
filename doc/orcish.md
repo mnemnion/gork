@@ -50,7 +50,7 @@ The remaining 5,331 (give or take) werdz are the Orcish library. Some effort is 
 
 Orcs may be taught two letta werdz, and it's likely even the most primitive Core Orcs will be expected to know a few. The structure (the bakpak) which contains the two letta werdz must exist, and the core API has `:` to add werdz to it. 
 
-Again, this is unlike most Forth, in that the dictionary is a forward-linked list and an Orc will refuse to relearn a word. It can be induced to forget one, which causes it to forget everything after. 
+Again, this is unlike most Forth, in that the dictionary is a forward-linked list and an Orc will refuse to relearn a word. It can be induced to forget one, which causes it to forget everything after. An Orc can only forget two letta werdz.
 
 ###Compilation model
 
