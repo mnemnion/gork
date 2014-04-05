@@ -17,7 +17,7 @@ variable (liver) 126 allot
 
 ( ---- Tawka ---- )
 
-: hexabyte ( hexes a byte )
+: hexabyte ( "hexes a byte" )
 	dup 10 < 
 		[ 48 + ] 
 		[ 87 + ] if ;
@@ -30,8 +30,8 @@ variable (liver) 126 allot
 	getc byte>cha 
 		[ drop half-heer ] ifFalse ;
 
-
-: heer ( hear a cha )
+: heer ( nil -> cha )
+	( "hear a werd" )
 	getc byte>cha 
 	[ 
 		getc byte>cha 
@@ -39,9 +39,13 @@ variable (liver) 126 allot
 	[ drop heer ]              if  
  ;
 
-: unspaz ( space handling ) ;
+: unspaz ( cha --> cha ) 
+	( "space handling" ) 
+	over 32 = 
+		[ nip half-heer unspaz ] ifTrue ;
 
-: grk   ( comprehend ) ;
+: grk   ( comprehend )
+	"\ngrokked!\n" puts ;
 
 : grok heer unspaz grk ;
 
