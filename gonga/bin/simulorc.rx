@@ -85,23 +85,23 @@ variable (liver) 126 allot
 	[ 48 - ] if ; 
 
 : numbaz 
-	"\nnumbaz!" puts 
+( 	"\nnumbaz!" puts )
 	dup 32 =
 	[ drop numba>byte ]
 	[ numba>byte swap numba>byte 4 << + ] if
-	"\nreached!" puts
+( 	"\nreached!" puts )
 	;
 
 : bakpak "\nbakpak!" puts ;
 
 : lettaz 
-	"\nlettaz!  " puts .s 
+	( "\nlettaz!  " puts ) 
 	dup 32 =  
 	 [ drop (liver) + @ do ]
 	 [ bakpak ] if ;
 
 : grk   ( comprehend )
-	"\ngrokked!" puts
+( 	"\ngrokked!" puts )
 	over numba?
 		[ numbaz ]
 		[ lettaz ] if
