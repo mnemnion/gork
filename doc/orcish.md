@@ -18,7 +18,7 @@ Orcs hear one byte at a time. The first thing an Orc will do with a byte is try 
 
 Any byte which succeeds in this first pass is a cha. Orcs hear and speak in cha. 
 
-The next attempt is to parse a number. Anything in the range [a-f0-9] will parse as a number, these chaz being known as numbaz. Barring any other character, an Orc will eat numbaz until his stack is full, then push another one. A 16 bit Orc eats numbaz 4 at a type, a 32 bit Orc eats 8. 
+The next attempt is to parse a number. Anything in the range [a-f0-9] will parse as a number, these chaz being known as numbaz. Barring any other character, an Orc will eat numbaz until the stack width is filled, then push another one. A 16 bit Orc eats numbaz 4 at a type, a 32 bit Orc eats 8. 
 
 Numbaz are always and only hexidecimal. No exceptions. 
 
