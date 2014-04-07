@@ -1,5 +1,4 @@
 #Orc Vocab Tables
-
 <table>
     <tr>
         <td>Cha</td>
@@ -51,24 +50,24 @@
         <td></td>
     </tr>
     <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>:</td>
+        <td>compile</td>
+        <td>nil</td>
+        <td>( 'werd' -&gt; ,werd := werd AND \toggle compiler on\ ) OR \toggle compiler off\</td>
         <td></td>
     </tr>
     <tr>
+        <td>|</td>
+        <td>grunt</td>
+        <td>nil</td>
+        <td>( ,DOCOL. AND \toggle compiler on\) OR \toggle compiler off\</td>
         <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+    </tr>
+    <tr>
+        <td>`</td>
+        <td>interpret</td>
+        <td>nil -&gt; mu</td>
+        <td>"werd" -&gt; \interpret word, disregarding compile state\&nbsp;</td>
         <td></td>
     </tr>
     <tr>
