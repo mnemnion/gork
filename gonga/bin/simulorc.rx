@@ -4,6 +4,7 @@
 
 variable (liver) 126 allot 
 
+hex F0000000 constant num-mask decimal
 
 : nope-nope-nope
 	"\nnope " puts  ;
@@ -55,15 +56,17 @@ variable (liver) 126 allot
 	( "filters out non-printable ascii" )
 	dup 32 126 within ;
 
+: getcha getc byte>cha ;
+
 : half-heer 
-	getc byte>cha 
+	getcha 
 		[ drop half-heer ] ifFalse ;
 
 : heer ( nil -> cha )
 	( "hear a werd" )
-	getc byte>cha 
+	getcha 
 	[ 
-		getc byte>cha 
+		getcha 
 		[ drop half-heer ] ifFalse ]
 	[ drop heer ]
 	if ;
@@ -84,11 +87,23 @@ variable (liver) 126 allot
 	[ 87 - ]
 	[ 48 - ] if ; 
 
+: byte-the-rest
+	 getcha 
+	 [ dup 32 <> push
+	   dup num-mask and pop and
+	   cr "byte-stack: " puts .s
+	     [ numba>byte swap 4 
+	       << + byte-the-rest ] 
+	     [ drop ]               if ]
+	 [ drop ] if
+	 
+	;
+
 : numbaz 
 ( 	"\nnumbaz!" puts )
 	dup 32 =
 	[ drop numba>byte ]
-	[ numba>byte swap numba>byte 4 << + ] if
+	[ numba>byte swap numba>byte 4 << + byte-the-rest ] if
 ( 	"\nreached!" puts )
 	;
 
