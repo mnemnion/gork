@@ -1,5 +1,6 @@
 ( Retro Toolbox )
 needs bad'
+needs console'
 
 8 constant (dump-width)
 
@@ -13,14 +14,27 @@ needs bad'
 		  ;
 
 : putcell ( adr -> nil ) 
-    ^bad'unpack 4 [ putbyte ] times space ;
+    ^bad'unpack 4 [ putbyte ] times ;
+
+: normalText  (   -   )  ^console'console? [ "\[0m" puts ] ifFalse ;
+
+: (highlight) ( adr -> adr )
+ ( "highlight cells " )
+ dup xt->d 0 <> 
+ [ ^console'RED ^console'foreground ]
+ [ ^console'normalText ] if
+ ;
 
 : dump ( adr range -> nil "hexdump")
 
     [ 
     (dump-width) mod 0 = 
-       [ cr ] ifTrue 
-	dup @ putcell 1+ ] iter
+       [ ^console'normalText 
+         cr dup putcell ': putc space space ] ifTrue 
+	dup @ (highlight) putcell space 1+ ] iter
+	^console'normalText
 
  ; 
+
+ : dump-me 12 23 putcell ;
 

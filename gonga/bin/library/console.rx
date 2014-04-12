@@ -10,6 +10,7 @@ chain: console'
   : setCursor   ( rc-   )  console? [ 1 8 out wait ] [ "\[%d;%dH" puts ] if ;
   : foreground  (  n-   )  console? [ 2 8 out wait ] [ "\[3%dm" puts ]   if ;
   : background  (  n-   )  console? [ 3 8 out wait ] [ "\[4%dm" puts ]   if ;
+  : normalText  (   -   )  console? [ "\[0m" puts ] ifFalse ;
   : home        (   -   )  0 0 setCursor ;
   : dimensions  (   -hw )  @ch @cw ;
 ;chain
