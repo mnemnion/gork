@@ -1,47 +1,26 @@
 ( Retro Toolbox )
 needs bad'
 
- 
-9 elements m0 m1 m2 m3 m4 m5 m6 m7 m8
-
-$F0000000 !m1
-$0F000000 !m2
-$00F00000 !m3
-$000F0000 !m4
-$0000F000 !m5
-$00000F00 !m6
-$000000F0 !m7
-$0000000F !m8
+8 constant (dump-width)
 
 : hexabyte ( "hexes a byte" )
 	dup 10 < 
 		[ 48 + ] 
 		[ 87 + ] if ;
 
-: putbyte dup 16 / hexabyte putc 
+: putbyte dup 4  >>  hexabyte putc 
 		      16 mod hexabyte putc 
 		  ;
 
-: mb>hexcha ( cell mask# -> cell "hex" )
-    
-    over push dup push ( cell m# -|- m# cell )
-		m1 + @ and 7 pop - 4 * >> "%x" puts
-	pop
-	;
-
-: putcell~ ( cell -> nil "cell" ) ( fails for the high byte "RSH on negative values implementation specific" )
-	8 [ mb>hexcha  ] iter
-
-	;
-
-
-: putcell
-	^bad'unpack 
-	4 [ putbyte ] times space ;
+: putcell ( adr -> nil ) 
+    ^bad'unpack 4 [ putbyte ] times space ;
 
 : dump ( adr range -> nil "hexdump")
 
-	[ dup @ putcell 1+ ] times
+    [ 
+    (dump-width) mod 0 = 
+       [ cr ] ifTrue 
+	dup @ putcell 1+ ] iter
 
  ; 
 
