@@ -1,6 +1,9 @@
 ( Fast loader )
 ( Saves typing )
 
-
+include tools.rx
 include simulorc.rx
+.s
+
+hex ABCDEF12 putcell
 

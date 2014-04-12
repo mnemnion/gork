@@ -4,7 +4,15 @@
 
 variable (liver) 126 allot 
 
-hex F0000000 constant num-mask decimal
+%11110000000000000000000000000000 constant num-mask
+
+( ---- Orc State Machine ---- )
+( ----     Aka the drp   ---- )
+
+0  variable: kruncht
+-1 variable: num-crunch
+-1 variable: tawkin
+0  variable: confusion
 
 : nope-nope-nope
 	"\nnope " puts  ;
@@ -56,72 +64,28 @@ hex F0000000 constant num-mask decimal
 	( "filters out non-printable ascii" )
 	dup 32 126 within ;
 
-: getcha getc byte>cha ;
+: (heer) ( nil -> cha ) getc byte>cha ;
 
-: half-heer 
-	getcha 
-		[ drop half-heer ] ifFalse ;
+: heer [ (heer) not ] while ; 
 
-: heer ( nil -> cha )
-	( "hear a werd" )
-	getcha 
-	[ 
-		getcha 
-		[ drop half-heer ] ifFalse ]
-	[ drop heer ]
-	if ;
+: num-i "\nnumbaz!" puts ;
 
-: unspaz ( cha --> cha ) 
-	( "space handling" ) 
-	over 32 = 
-		[ nip half-heer unspaz ] ifTrue ;
-
-: numba?  ( cha -> flag ?numba )
-	( "is the cha a numba?" )
-	dup 97 103 within push ( a-f )
-	    48 58  within pop ( 0-9 )
-	or ;
-
-: numba>byte ( numba -> byte )
-	dup 97 103 within
-	[ 87 - ]
-	[ 48 - ] if ; 
-
-: byte-the-rest
-	 getcha 
-	 [ dup 32 <> push
-	   dup num-mask and pop and
-	   cr "byte-stack: " puts .s
-	     [ numba>byte swap 4 
-	       << + byte-the-rest ] 
-	     [ drop ]               if ]
-	 [ drop ] if
-	 
-	;
+: num-c "\nno compila" puts ; 
 
 : numbaz 
-( 	"\nnumbaz!" puts )
-	dup 32 =
-	[ drop numba>byte ]
-	[ numba>byte swap numba>byte 4 << + byte-the-rest ] if
-( 	"\nreached!" puts )
-	;
+	@tawkin
+	[ num-i ]
+	[ num-c ] if ;
 
-: bakpak "\nbakpak!" puts ;
+: lettaz "\nlettaz!" puts ;
 
-: lettaz 
-	( "\nlettaz!  " puts ) 
-	dup 32 =  
-	 [ drop (liver) + @ do ]
-	 [ bakpak ] if ;
+: grk 
+	@num-crunch	
+	[ numbaz ]
+	[ lettaz ] if
+	0 ;
 
-: grk   ( comprehend )
-( 	"\ngrokked!" puts )
-	over numba?
-		[ numbaz ]
-		[ lettaz ] if
-	 ;
+: grok  [ heer grk ] while ; 
 
-: grok heer unspaz grk ;
 
 
