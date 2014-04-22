@@ -12,10 +12,31 @@
 	[ dup @ putn space
 		1+ @ ?dup 0 <> ] while ;
 
+: tail 
+	[ dup 1+ @ dup 0 <> 
+		[ nip -1 ]
+		[ drop  0 ] if ] while ;
+
+: append ( cell cell -> nil )
+	swap tail 1+ ! ;
+
+: car ( cell -> value ) @ ;
+
+: cdr ( cell -> value ) 1+ @ ; 
+
 
 cell: foo 23 !foo
 
 cell: bar 56 !bar
 
+cell: baz 78 !baz
+
+cell: qux 99 !qux
+
 foo bar cons  
+
+foo baz append
+
+foo qux append
+
 
