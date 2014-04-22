@@ -2,8 +2,9 @@
 ( Saves typing )
 
 include tools.rx
+include bakpak.rx
 include simulorc.rx
 .s
 
-hex ABCDEF12 putcell
+( hex ABCDEF12 putcell )
 

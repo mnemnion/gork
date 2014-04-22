@@ -1,40 +1,79 @@
-( Retro Toolbox )
+( Simple Hex Dump )
 needs bad'
 needs console'
 
 8 constant (dump-width)
+
+: putxt xt->d d->name puts ;
 
 : hexabyte ( "hexes a byte" )
 	dup 10 < 
 		[ 48 + ] 
 		[ 87 + ] if ;
 
+: byte>cha ( byte -> < := cha true | byte false > -- := ?cha )
+	( "filters out non-printable ascii" )
+	dup 32 126 within ;
+
 : putbyte dup 4  >>  hexabyte putc 
 		      16 mod hexabyte putc 
 		  ;
 
-: putcell ( adr -> nil ) 
+: putcell ( cell -> nil ) 
     ^bad'unpack 4 [ putbyte ] times ;
 
 : normalText  (   -   )  ^console'console? [ "\[0m" puts ] ifFalse ;
 
-: (highlight) ( adr -> adr )
+: (highlight) ( cell -> cell )
  ( "highlight cells " )
  dup xt->d 0 <> 
  [ ^console'RED ^console'foreground ]
  [ ^console'normalText ] if
  ;
 
-: dump ( adr range -> nil "hexdump")
+"" variable: dump-str
+
+: dot-or-cha 
+   dump-str @ swap
+   byte>cha
+   [ ^strings'appendChar ]
+   [ drop '. ^strings'appendChar ] if
+   dump-str !
+ ;
+
+
+: (stringulate) ( cell -> cell )
+	dup ^bad'unpack 4 [ dot-or-cha ] times
+	;
+
+: dotpr 
+   dump-str @
+   puts
+   "" dump-str !
+   ;
+
+: smart-dump ( adr range -> nil "hexdump")
 
     [ 
     (dump-width) mod 0 = 
-       [ ^console'normalText 
-         cr dup putcell ': putc space space ] ifTrue 
-	dup @ (highlight) putcell space 1+ ] iter
-	^console'normalText
-
+       [  ^console'normalText 
+          10 [ space ] times 
+          dotpr
+          cr dup putcell ': putc space space ] ifTrue 
+	dup @ (highlight) (stringulate) putcell space 1+ ] iter
+	^console'normalText 10 [ space ] times dotpr
  ; 
+
+ : dump 
+    [ 
+    (dump-width) mod 0 = 
+       [  10 [ space ] times 
+          dotpr
+          cr dup putcell ': putc space space ] ifTrue 
+	dup @ (stringulate) putcell space 1+ ] iter
+	10 [ space ] times 
+	dotpr
+	;
 
  : dump-me 12 23 putcell ;
 
