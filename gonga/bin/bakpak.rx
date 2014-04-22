@@ -1,31 +1,21 @@
 ( Bakpak: a forward-linked dictionary )
 
-needs struct'
-with struct'
+: cell: create 0 , 0 , ;
 
-{
-   1 field .id
-   1 field .next
-} pakcell
+: cell here 0 , 0 , ; 
 
-pakcell cell.1st	
+: cons ( cell cell -> nil )
+	swap 1+ !
+	;
 
-1 cell.1st .id !
-0 cell.1st .next !
+: walk ( cell -> nil )
+	[ dup @ putn space
+		1+ @ ?dup 0 <> ] while ;
 
-cell.1st variable: bakcell
 
-: newcell 
-     cell.1st clone  ;
+cell: foo 23 !foo
 
-: append ( cell -> nil )
-	@bakcell  ( cell bak.cell -- )
-	over swap .next ! ( store cell to 'next' )
-	!bakcell
- ;
+cell: bar 56 !bar
 
-: walk 
-	@cell.1st putn
-	cell.1st .next @
-	[ dup .id @ putn
-	  .next @ dup 0 <> ] while ; 
+foo bar cons  
+
