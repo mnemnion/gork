@@ -52,6 +52,14 @@ Point being, I consider parsing words to be a special form of taking a string an
 
 Retro is already moving in this direction, as it embraces quotations, which are the general form of words. `:` is a perfect example, we also want the word `":` that defines the last string as a word. This makes `"word" ":` equivalent to `: word`. We could have words like `eval ( str -> mu )`, which does what you'd expect, and even `define (a.str b.str -> nil ,word )` which is a bit of a sophistication that defines the word `b` as the contents of `a`. I'm sure our Lisp friends can read into the implied macro. 
 
+Which brings us to 
+
+## Macros
+
+The inference engine is going to want to know which kind of word we have, as soon as possible. We could of course backtrack and redo the whole inference when we read `immediate` after the semicolon but a) I've never found that convention appealing and b) why not just `macro:` instead of `:` ? 
+
+If I understand the machine model correctly, the class of the word is laid down right by the XT, so a word like `immediate` ends up vectoring (Retro jargon for changing an executable's semantics) the nature of the definition. Unavoidable? Probably, we need to be able to act on quotations. `macro:` as the specific form gives both the reader and the Fabricator a useable hint. 
+
 
 
 
