@@ -5,7 +5,7 @@ In keeping with the minimalism and grace of Forth, we want the type system to be
 Some of the words are difficult to imagine a compact and general syntax for. This indicates to me that I don't fully understand the algorithm behind inferring through these words. They deserve disproportionate focus. 
 
 
-## do ( xt -> mu )
+## do ( xt -> `mu` )
 
 `do` is more important in Retro than `execute` in Forths, being invoked in most control structures. 
 
