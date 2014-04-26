@@ -38,6 +38,20 @@ We still have to handle the case where a range of memory is of type `@mu`, which
 However, we can use dup tracking in many cases to carry the range over. Storing data to generic memory then losing all reference to it is a memory leak by definition. Normally we'll have a copy of the address stored somewhere. If the address is named, it's a variable, and we track those explicitly. If it's not, our dup tracker will change the type of the duplicate address from `@mu` to `@type`, so we're good if we try to call a word restricted to `type` on that address. 
 Inevitably, we need to encourage certain stylistic choices that support inference. It will be perfectly possible to write programs that are perverse and cannot be inferred. This is a code smell, not a reason to introduce dependant typing in the rabbit-hole sense. 
 
+## Parsing Words
+
+I see no utility to checking output side effects, nor any clear way to do so. A write to terminal or a file either succeeds, or failure is handled by the virtual machine: I'm not actually clear how that works in Ngaro.
+
+Parsing words must be handled cleanly, since `"this is a string with do in it"`, without comprehending parsers, would try and make inferences on a number of words that Retro won't see. 
+
+This is as good a place to put this as any: I feel as though traditional Forths are a bit too literally interactive. What do I mean by that? it's not straightforward to feed strings living on the stack into the Forth engine a la `eval`, nor is it straightforward to dereference the output into a string buffer that may be called and manipulated directly. 
+
+The latter makes a difference if one wants to redirect output to a subsection of the screen. There, we need to convert the newline character into a partial carriage return + line feed, instead of a full one. 
+
+Point being, I consider parsing words to be a special form of taking a string and consuming a certain amount of it. Similarly, output words are a special case of taking stack information and producing a string on that basis. 
+
+Retro is already moving in this direction, as it embraces quotations, which are the general form of words. `:` is a perfect example, we also want the word `":` that defines the last string as a word. This makes `"word" ":` equivalent to `: word`. We could have words like `eval ( str -> mu )`, which does what you'd expect, and even `define (a.str b.str -> nil ,word )` which is a bit of a sophistication that defines the word `b` as the contents of `a`. I'm sure our Lisp friends can read into the implied macro. 
+
 
 
 
