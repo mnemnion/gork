@@ -5,7 +5,7 @@ In keeping with the minimalism and grace of Forth, we want the type system to be
 Some of the words are difficult to imagine a compact and general syntax for. This indicates to me that I don't fully understand the algorithm behind inferring through these words. They deserve disproportionate focus. 
 
 
-## do ( xt -> \`mu\` )
+## do ( xt -> \`xt\` )
 
 `do` is more important in Retro than `execute` in Forths, being invoked in most control structures. 
 
@@ -13,7 +13,7 @@ The key to `do` is that we need to infer through to the type contract of the wor
 
 I'm still brushing up on how Retro actually builds quotes in Ngaro. Regardless, I presume there's a reliable way to tell an XT from another address, meaning we can perform the usual interpret or compile time check against the word contract. 
 
-## if ( flag xt xt -> mu | mu )
+## if ( flag a.xt b.xt -> \`a.xt\` | \`b.xt\` )
 
 `if`, in Retro, executes NOS if the flag is -1 and TOS if the flag is 0. 
 
